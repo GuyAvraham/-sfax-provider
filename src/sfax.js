@@ -16,7 +16,8 @@ class SfaxProvider {
             username,
             apiKey,
             encryptionKey,
-            initVector
+            initVector,
+            logger,
         } = config;
 
         if (!apiKey || !encryptionKey || !initVector) {
@@ -26,6 +27,7 @@ class SfaxProvider {
         this.serviceURL = serviceURL;
         this.apiKey = apiKey;
         this.token = crypto.generateToken(username, apiKey, encryptionKey, initVector);
+        this.logger = logger;
     }
 
     /**
@@ -49,6 +51,11 @@ class SfaxProvider {
             url = `${url}${this._buildBarcodeParam(options.barcodes)}`;
         }
         url = `${url}&`;
+
+
+        if (this.logger && this.logger.info) {
+          this.logger.info(`Sending fax: ${url}`);
+        }
 
         const req = request.post(url, (err, res, body) => callback(err, body));
         var form = req.form();
@@ -113,14 +120,14 @@ class SfaxProvider {
             url = `${url}&MaxItems=${encodeURIComponent(options.maxItems)}`;
         }
         url = `${url}&`;
-        
+
         return request.get(url, (err, res, body) => callback(err, body));
     }
 
     /**
      * DownloadInboundFaxAsPdf
      * http://sfax.scrypt.com/article/330-service-methods
-     * 
+     *
      * @param output {String | Stream}
      * @param options {Object}
      * @param callback {Function}
@@ -132,6 +139,10 @@ class SfaxProvider {
             url = `${url}&FaxId=${encodeURIComponent(options.faxId)}`;
         }
         url = `${url}&`;
+
+        if (this.logger && this.logger.info) {
+            this.logger.info(`Requesting pdf inbound fax: ${url}`);
+        }
 
         if (typeof output === 'string') {
             output = fs.createWriteStream(output);
@@ -157,7 +168,7 @@ class SfaxProvider {
             url = `${url}&FaxId=${encodeURIComponent(options.faxId)}`;
         }
         url = `${url}&`;
-        
+
         if (typeof output === 'string') {
             output = fs.createWriteStream(output);
         }
