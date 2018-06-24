@@ -54,7 +54,7 @@ class SfaxProvider {
 
 
         if (this.logger && this.logger.info) {
-          this.logger.info(`Sending fax: ${url}`);
+          // this.logger.info(`Sending fax: ${url}`);
         }
 
         const req = request.post(url, (err, res, body) => callback(err, body));
@@ -141,7 +141,7 @@ class SfaxProvider {
         url = `${url}&`;
 
         if (this.logger && this.logger.info) {
-            this.logger.info(`Requesting pdf inbound fax: ${url}`);
+            // this.logger.info(`Requesting pdf inbound fax: ${url}`);
         }
 
         if (typeof output === 'string') {
