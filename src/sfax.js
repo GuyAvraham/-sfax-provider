@@ -147,7 +147,11 @@ class SfaxProvider {
         if (typeof output === 'string') {
             output = fs.createWriteStream(output);
         }
-        var req = request.get(url, (err, res, body) => callback(err, body));
+
+        var req = request.get(url, (err, res, body) => {
+          this.logger.info('Response for load SFax', { err, res, body });
+          return callback(err, body);
+        });
         req.pipe(output);
 
         return req;
