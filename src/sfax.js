@@ -11,6 +11,7 @@ const crypto = require('./sfax-crypto');
  */
 class SfaxProvider {
     constructor(config = { }) {
+        this.config = config;
         const {
             serviceURL = 'https://api.sfaxme.com/api/',
             username,
@@ -26,9 +27,19 @@ class SfaxProvider {
 
         this.serviceURL = serviceURL;
         this.apiKey = apiKey;
-        this.token = crypto.generateToken(username, apiKey, encryptionKey, initVector);
         this.logger = logger;
     }
+
+  getToken() {
+    const {
+      username,
+      apiKey,
+      encryptionKey,
+      initVector,
+    } = this.config;
+
+    return crypto.generateToken(username, apiKey, encryptionKey, initVector);
+  }
 
     /**
      * SendFax
@@ -293,7 +304,8 @@ class SfaxProvider {
      * @private
      */
     _buildEndPointURL(name) {
-        return `${this.serviceURL}${name}?token=${encodeURIComponent(this.token)}&apikey=${this.apiKey}`;
+        var token = this.getToken();
+        return `${this.serviceURL}${name}?token=${encodeURIComponent(token)}&apikey=${this.apiKey}`;
     }
 }
 
